@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Custommer{
+  id  String @id @unique @default(uuid())
+  name String? 
+  phone String @unique
+  email String? @unique
+  password String
+  cpf Int?
+  create_at DateTime @default(now())
+  update_at DateTime @default(now())
+
+  address Address[]
+  sale Sale[]
+
+  @@map("custommers")
+}
+
+model Address{
+  id String @unique @default(uuid())
+  cep Int
+  street String
+  neighborhood String
+  number Int
+
+  CustommerId String
+  custommer Custommer @relation(fields: [CustommerId], references: [id])
+
+  @@map("address")
+}
+
+model Product{
+  id String @unique @default(uuid())
+  name String
+  description String
+  price Float
+  amount Int
+  create_at DateTime @default(now())
+  update_at DateTime @default(now())
+
+  sale Sale[]
+
+  @@map("products")
+}
+
+model Sale{
+  id String @unique @default(uuid())
+  order Int
+  CustommerId String
+  ProductId String
+  price Float
+
+  custommer Custommer @relation(fields: [CustommerId], references: [id])
+  product Product @relation(fields: [ProductId], references: [id])
+
+  create_at DateTime @default(now())
+  update_at DateTime @default(now())
+}
