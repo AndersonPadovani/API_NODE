@@ -17,7 +17,7 @@ model Custommer{
   phone String @unique
   email String? @unique
   password String
-  cpf Int?
+  cpf String?
   create_at DateTime @default(now())
   update_at DateTime @default(now())
 
@@ -32,9 +32,13 @@ model Address{
   cep Int
   street String
   neighborhood String
-  number Int
+  city String
+  number Int?
 
-  CustommerId String
+  create_at DateTime @default(now())
+  update_at DateTime @default(now())
+
+  CustommerId String @unique
   custommer Custommer @relation(fields: [CustommerId], references: [id])
 
   @@map("address")
