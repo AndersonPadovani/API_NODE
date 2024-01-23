@@ -2,6 +2,44 @@ import { NextFunction, Request, Response } from "express";
 import { BadRequest } from "../../util/apiError.js";
 import { object, string } from "yup";
 
+const midCustommerGetByPhoneSchema = object({
+    phone: string().required().length(16),
+});
+
+const MidCustommerGetByPhone = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    await midCustommerGetByPhoneSchema
+        .validate(request.params)
+        .then(async () => {
+            next();
+        })
+        .catch((err) => {
+            throw new BadRequest(err);
+        });
+};
+
+const midCustommerGetByEmailSchema = object({
+    email: string().required().email(),
+});
+
+const MidCustommerGetByEmail = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    await midCustommerGetByEmailSchema
+        .validate(request.params)
+        .then(async () => {
+            next();
+        })
+        .catch((err) => {
+            throw new BadRequest(err);
+        });
+};
+
 const midCustommerCreateSchema = object({
     name: string().required().min(4),
     phone: string().required().length(16),
@@ -66,4 +104,10 @@ const MidCustommerDelete = async (
         });
 };
 
-export { MidCustommerCreate, MidCustommerUpdate, MidCustommerDelete };
+export {
+    MidCustommerCreate,
+    MidCustommerUpdate,
+    MidCustommerDelete,
+    MidCustommerGetByPhone,
+    MidCustommerGetByEmail,
+};

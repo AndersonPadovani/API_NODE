@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import { BadRequest, Conflict } from "../../util/apiError.js";
 import { NextFunction, Request, Response } from "express";
 import { Sha1 } from "../../util/sha1.js";
-import { date } from "yup";
 
 const prisma = new PrismaClient();
 
@@ -26,14 +25,52 @@ async function GetAll(
         throw new BadRequest("Nenhum usuario encontrado!");
     }
 
-    return resposne.status(200).json(result);
+    request.body.resultDb = result;
+
+    next();
 }
 
-async function GetById(
+async function GetByPhone(
     request: Request,
-    resposne: Response,
+    response: Response,
     next: NextFunction
-) {}
+) {
+    const userData = request.params;
+
+    const resDb = await prisma.custommer.findUnique({
+        where: {
+            phone: userData.phone,
+        },
+    });
+
+    if (!resDb) {
+        throw new BadRequest(`${userData.phone} não esta cadastrado.`);
+    }
+
+    request.body.resultDb = resDb;
+    next();
+}
+
+async function GetByEmail(
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
+    const userData = request.params;
+
+    const resDb = await prisma.custommer.findUnique({
+        where: {
+            phone: userData.email,
+        },
+    });
+
+    if (!resDb) {
+        throw new BadRequest(`${userData.email} não esta cadastrado.`);
+    }
+
+    request.body.resultDb = resDb;
+    next();
+}
 
 async function Create(
     request: Request,
@@ -69,7 +106,7 @@ async function Create(
     next();
 }
 
-async function Patch(request: Request, resposne: Response, next: NextFunction) {
+async function Patch(request: Request, response: Response, next: NextFunction) {
     const userData = request.body as reqBody;
 
     await prisma.custommer
@@ -114,7 +151,7 @@ async function Patch(request: Request, resposne: Response, next: NextFunction) {
 
 async function Delete(
     request: Request,
-    resposne: Response,
+    response: Response,
     next: NextFunction
 ) {
     const userData = request.body as reqBody;
@@ -133,4 +170,4 @@ async function Delete(
         });
 }
 
-export { GetAll, GetById, Create, Patch, Delete };
+export { GetAll, GetByPhone, GetByEmail, Create, Patch, Delete };

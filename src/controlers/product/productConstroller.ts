@@ -16,11 +16,49 @@ const getAll = async (request: Request, response: Response) => {
     const productDb = await prisma.product.findMany({});
 
     if (productDb.length <= 0) {
-        throw new BadRequest("Nenhum usuario encontrado!");
+        throw new BadRequest("Nenhum produto encontrado!");
     }
 
     return response.status(200).json(productDb);
 };
+
+const getByName = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    const productData = request.params;
+    const resDb = await prisma.product.findUnique({
+        where: { name: productData.name },
+    });
+
+    if (!resDb) {
+        throw new BadRequest("Nenhum produto encontrado!");
+    }
+
+    request.body.resultDb = resDb;
+    next();
+};
+
+const getLikeName = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    const productData = request.params;
+    console.log(productData.like);
+    const resDb = await prisma.product.findMany({
+        where: { name: { contains: productData.like } },
+    });
+
+    if (!resDb) {
+        throw new BadRequest("Nenhum produto encontrado!");
+    }
+
+    request.body.resultDb = resDb;
+    next();
+};
+
 const Post = async (
     request: Request,
     response: Response,
@@ -104,4 +142,4 @@ const Delete = async (
         });
 };
 
-export { getAll, Post, Patch, Delete };
+export { getAll, getByName, getLikeName, Post, Patch, Delete };

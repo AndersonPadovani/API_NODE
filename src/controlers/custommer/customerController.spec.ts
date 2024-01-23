@@ -7,8 +7,8 @@ describe("Testes na pagina 'customer' || '/customer'", async () => {
 
     test("Post /customer cadastrando novo usuario", async () => {
         const res = await axios.post(localURL, {
-            name: "Anderson Ramos Padovani",
-            phone: "(45) 9 9953-0893",
+            name: "Jhon Doe",
+            phone: "(45) 9 9999-9999",
             password: "admin",
         });
 
@@ -16,17 +16,17 @@ describe("Testes na pagina 'customer' || '/customer'", async () => {
     });
 
     test("Get /custommer validando StatusCode e retorno de usuario cadastrado", async () => {
-        const res = await axios.get(localURL);
+        const res = await axios.get(localURL + "/phone/(45) 9 9999-9999");
 
         expect(res.status).toBe(200);
-        expect(res.data[0].name).toEqual("Anderson Ramos Padovani");
+        expect(res.data["name"]).toEqual("Jhon Doe");
     });
 
     test("Update /custommer Atualizando usuario", async () => {
-        const res = await axios.get(localURL);
-        const { id, name, phone, password } = res.data[0];
+        const res = await axios.get(localURL + "/phone/(45) 9 9999-9999");
+        const { id, name, phone, password } = res.data;
 
-        const email = "andersonpadovani@protonmail.com";
+        const email = "jhon@doe.com.br";
         const cpf = "12345678910";
 
         const update = await axios.patch(localURL, {
@@ -39,16 +39,21 @@ describe("Testes na pagina 'customer' || '/customer'", async () => {
         });
 
         expect(update.status).toBe(204);
+    });
 
-        const afterUpdate = await axios.get(localURL);
-        expect(afterUpdate.data[0].email).toEqual(email);
+    test("Get /custommer validando se o usuario foi atualizado com sucesso.", async () => {
+        const res = await axios.get(localURL + "/phone/(45) 9 9999-9999");
+
+        expect(res.status).toBe(200);
+        expect(res.data["name"]).toEqual("Jhon Doe");
+        expect(res.data["email"]).toEqual("jhon@doe.com.br");
     });
 
     test("/custommer Validando entrada duplicada de usuario no banco de dados!", async () => {
         await axios
             .post(localURL, {
-                name: "Anderson Ramos Padovani",
-                phone: "(45) 9 9953-0893",
+                name: "Jhon Doe",
+                phone: "(45) 9 9999-9999",
                 password: "admin",
             })
             .then((res) => {
@@ -60,8 +65,8 @@ describe("Testes na pagina 'customer' || '/customer'", async () => {
     });
 
     test("/custommer Excluindo usuario pelo id", async () => {
-        const { data } = await axios.get(localURL);
-        const firstUserDb = data[0].id;
+        const { data } = await axios.get(localURL + "/phone/(45) 9 9999-9999");
+        const firstUserDb = data["id"];
 
         const res = await axios.delete(localURL, {
             data: {
