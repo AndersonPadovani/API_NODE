@@ -7,20 +7,23 @@ import {
     MidCustommerUpdate,
 } from "../../middlewar/custommer/midCustommer.js";
 import * as Controler from "../../controlers/controlers.js";
+import { MidAuthRouter } from "../../middlewar/auth/midAuth.js";
 
 const appRouter = Router();
 
 appRouter.get(
     "/customer",
     Controler.Customer.GetAll,
+    MidAuthRouter,
     (request: Request, response: Response) => {
-        return response.status(200).json(request.body.resultDb);
+        return response.status(200).json(request.body);
     }
 );
 
 appRouter.get(
     "/customer/phone/:phone",
     MidCustommerGetByPhone,
+    MidAuthRouter,
     Controler.Customer.GetByPhone,
     (request: Request, response: Response) => {
         return response.status(200).json(request.body.resultDb);
@@ -30,6 +33,7 @@ appRouter.get(
 appRouter.get(
     "/customer/email/:email",
     MidCustommerGetByEmail,
+    MidAuthRouter,
     Controler.Customer.GetByPhone,
     (request: Request, response: Response) => {
         return response.status(200).json(request.body.resultDb);
@@ -47,6 +51,7 @@ appRouter.post(
 appRouter.patch(
     "/customer",
     MidCustommerUpdate,
+    MidAuthRouter,
     Controler.Customer.Patch,
     (request: Request, response: Response) => {
         response.status(204).send();
@@ -55,6 +60,7 @@ appRouter.patch(
 appRouter.delete(
     "/customer",
     MidCustommerDelete,
+    MidAuthRouter,
     Controler.Customer.Delete,
     (request: Request, response: Response) => {
         response.status(204).send();

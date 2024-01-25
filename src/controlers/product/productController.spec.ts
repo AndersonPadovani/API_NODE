@@ -48,13 +48,19 @@ describe("Testes na pagina 'product' || '/product'", async () => {
 
     test("/product Validando entrada duplicada de produto no banco de dados!", async () => {
         await axios
-            .post(localURL, {
-                amount: "8",
-                price: "2325.50",
-                description: "Celular Xiaomi Poco X6 Ultra",
-                name: "Poco X6 - Ultra 1Tb",
-            })
+            .post(
+                localURL,
+                {
+                    amount: "8",
+                    price: "2325.50",
+                    description: "Celular Xiaomi Poco X6 Ultra",
+                    name: "Poco X6 - Ultra 1Tb",
+                },
+                { headers: { Authorization: "Bearer asdasd" } }
+            )
             .catch((err) => {
+                console.log(err);
+
                 expect(err.response.status).toBe(409); //Caso banco de dados recuse por entrada duplicada 409 Conflict
             });
     });

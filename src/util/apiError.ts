@@ -24,3 +24,9 @@ export class InternalServerError extends ApiError {
         super(errorMessage, 500);
     }
 }
+
+export class Unautorized extends ApiError {
+    constructor(errorMessage: string) {
+        super(errorMessage, 401);
+    }
+}
