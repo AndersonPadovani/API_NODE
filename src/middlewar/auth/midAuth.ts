@@ -61,16 +61,19 @@ const MidAuthRouter = async (
     await midJwtTokenSchema
         .validate(request.headers)
         .then(async () => {
-            const jwtValidate = await JwtAuthenticateJwtToken(
+            await JwtAuthenticateJwtToken(
                 request.headers.bearer!.toString()
-            );
-            console.log(jwtValidate);
-
-            request.body.JwtDecode = jwtValidate;
-            next();
+            ).then((resp) => {
+                request.body.JwtDecode = resp;
+                next();
+            });
         })
         .catch((err) => {
-            throw new Unautorized(err);
+            if (err.statusCode === 401) {
+                throw new Unautorized(err);
+            }
+
+            throw new BadRequest(err);
         });
 };
 
